@@ -1,2 +1,2 @@
 from .employee import Employee
-from .topics import Topic
+from .topic import Topic
