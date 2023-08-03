@@ -16,4 +16,15 @@ class PostView(ViewSet):
         serializer = PostSerializer(comment)
         return Response(serializer.data)
 
-    
+    def destroy(self, request, pk):
+        post = Post.objects.get(pk=pk)
+        post.delete()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+
+class PostSerializer(serializers.ModelSerializer):
+    """JSON serializer for comment
+    """
+    class Meta:
+        model = Post
+        fields = ('id', 'content', 'author' )
+        depth = 1
