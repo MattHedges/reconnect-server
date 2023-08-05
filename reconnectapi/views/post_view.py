@@ -15,6 +15,17 @@ class PostView(ViewSet):
         comment = Post.objects.get(pk=pk)
         serializer = PostSerializer(comment)
         return Response(serializer.data)
+    
+    def create(self, request):
+
+        author = User.objects.get(pk=request.data["user"])
+
+        post = Post.objects.create(
+        content=request.data["content"],
+        author = author
+        )
+        serializer = PostSerializer(post)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def destroy(self, request, pk):
         post = Post.objects.get(pk=pk)
