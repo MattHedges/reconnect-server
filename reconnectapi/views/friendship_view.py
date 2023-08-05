@@ -4,10 +4,10 @@ from rest_framework.response import Response
 from rest_framework import serializers, status
 from rest_framework.decorators import action
 from django.contrib.auth.models import User
-from reconnectapi.models import Comment, Post, Friendship
+from reconnectapi.models import Friendship
 
 
-class CommentView(ViewSet):
+class FriendshipView(ViewSet):
     """Reconnect friendship View"""
 
     def retrieve(self, request, pk):
@@ -18,13 +18,13 @@ class CommentView(ViewSet):
 
     def create(self, request):
         """create friendship"""
-        user1 = User.objects.get(pk=request.data["user1"])
-        user2 = User.objects.get(pk=request.data["user2"])
+        sender = User.objects.get(pk=request.data["sender"])
+        receiver = User.objects.get(pk=request.data["receiver"])
         
 
         friendship = Friendship.objects.create(
-        user1=user1,
-        user2=user2,
+        sender=sender,
+        receiver=receiver,
         since=request.data["since"]
         )
         serializer = FriendshipSerializer(friendship)
@@ -32,13 +32,13 @@ class CommentView(ViewSet):
 
     def update(self, request, pk):
         """update friendship"""
-        user1 = User.objects.get(pk=request.data["user1"])
-        user2 = User.objects.get(pk=request.data["user2"])
+        sender = User.objects.get(pk=request.data["sender"])
+        receiver = User.objects.get(pk=request.data["receiver"])
 
         friendship = Friendship.objects.get(pk=pk)
         friendship.since = request.data["since"],
-        user1 = user1
-        user2 = user2
+        sender = sender
+        receiver = receiver
         friendship.save()
 
         return Response(None, status=status.HTTP_204_NO_CONTENT)
@@ -53,6 +53,6 @@ class FriendshipSerializer(serializers.ModelSerializer):
     """JSON serializer for comment
     """
     class Meta:
-        model = Comment
-        fields = ('id', 'user1', 'user2', 'since')
+        model = Friendship
+        fields = ('id', 'sender', 'receiver', 'since')
         depth = 1
