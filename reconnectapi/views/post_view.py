@@ -1,4 +1,4 @@
-from django.http import HttpResponseServerError
+from django.http import HttpResponseServerError, HttpResponse
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
@@ -22,6 +22,7 @@ class PostView(ViewSet):
 
         post = Post.objects.create(
         content=request.data["content"],
+        isApproved = request.data["isApproved"],
         user = user
         )
         serializer = PostSerializer(post)
@@ -33,6 +34,7 @@ class PostView(ViewSet):
 
         post = Post.objects.get(pk=pk)
         post.content = request.data["content"]
+        post.isApproved = request.data["isApproved"]
         user = user
         post.save()
 
@@ -52,11 +54,23 @@ class PostView(ViewSet):
             posts = Post.objects.all()
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
+    
+    def approve_post(self, post_id):
+        post = Post.objects.get(id=post_id)
+        post.is_approved = True
+        post.save()
+    
+    def approve_post_view(self, request, post_id):
+        if request.user.is_staff:  # Only allow staff users to approve posts
+            approve_post(post_id)
+            return HttpResponse("Post approved.")
+        else:
+            return HttpResponse("You do not have permission to approve posts.")
 
 class PostSerializer(serializers.ModelSerializer):
     """JSON serializer for comment
     """
     class Meta:
         model = Post
-        fields = ('id', 'content', 'user' )
+        fields = ('id', 'content', 'user', 'isApproved' )
         depth = 1
