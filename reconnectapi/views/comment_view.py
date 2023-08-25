@@ -18,14 +18,14 @@ class CommentView(ViewSet):
 
     def create(self, request):
         """create comment"""
-        author = User.objects.get(pk=request.data["user"])
+        user = User.objects.get(pk=request.data["user"])
         post = Post.objects.get(pk=request.data["post"])
         
 
         comment = Comment.objects.create(
         comment=request.data["comment"],
         timestamp=request.data["timestamp"],
-        author=author,
+        user=user,
         post=post
         )
         serializer = CommentSerializer(comment)
@@ -33,13 +33,13 @@ class CommentView(ViewSet):
 
     def update(self, request, pk):
         """update Comment"""
-        author = User.objects.get(pk=request.data["user"])
+        user = User.objects.get(pk=request.data["user"])
         post = Post.objects.get(pk=request.data["post"])
 
         comment = Comment.objects.get(pk=pk)
         comment.content = request.data["content"]
         comment.timestamp = request.data["timestamp"]
-        author = author
+        user = user
         post = post
         
         comment.save()
@@ -56,5 +56,5 @@ class CommentSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Comment
-        fields = ('id', 'content', 'timestamp', 'author', 'post' )
+        fields = ('id', 'content', 'timestamp', 'user', 'post' )
         depth = 1

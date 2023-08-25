@@ -18,22 +18,22 @@ class PostView(ViewSet):
     
     def create(self, request):
 
-        author = User.objects.get(pk=request.data["user"])
+        user = User.objects.get(pk=request.data["user"])
 
         post = Post.objects.create(
         content=request.data["content"],
-        author = author
+        user = user
         )
         serializer = PostSerializer(post)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     def update(self, request, pk):
 
-        author = User.objects.get(pk=request.data["user"])
+        user = User.objects.get(pk=request.data["user"])
 
         post = Post.objects.get(pk=pk)
         post.content = request.data["content"]
-        author = author
+        user = user
         post.save()
 
         return Response(None, status=status.HTTP_204_NO_CONTENT)
@@ -58,5 +58,5 @@ class PostSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Post
-        fields = ('id', 'content', 'author' )
+        fields = ('id', 'content', 'user' )
         depth = 1
