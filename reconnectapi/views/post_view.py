@@ -42,6 +42,16 @@ class PostView(ViewSet):
         post = Post.objects.get(pk=pk)
         post.delete()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
+    
+    def list(self, request):
+        query_params = request.query_params.dict()
+
+        if 'topic' in query_params:
+            posts = Post.objects.filter(topic=query_params['topic'])
+        else:
+            posts = Post.objects.all()
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
 
 class PostSerializer(serializers.ModelSerializer):
     """JSON serializer for comment
